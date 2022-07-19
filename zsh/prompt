@@ -1,0 +1,41 @@
+#             Git Auto-complete
+##############################################
+# Load Git completion
+zstyle ':completion:*:*:git:*' script ~/.zsh/git-completion.bash
+fpath=(~/.zsh $fpath)
+
+autoload -Uz compinit && compinit
+
+#                  Prompt
+##############################################
+# Load version control information
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+# Format the vcs_info_msg_0_ variable
+zstyle ':vcs_info:git:*' formats '%b'
+
+# Set up the prompt (with git branch name)
+
+function get_branch() { echo -e "%{\e[0;33m%}${vcs_info_msg_0_}" }
+
+function get_pwd(){
+  git_root=$PWD
+  while [[ $git_root != / && ! -e $git_root/.git ]]; do
+    git_root=$git_root:h
+  done
+  if [[ $git_root = / ]]; then
+    unset git_root
+    prompt_short_dir='%{\e[0;32m%~%}'
+  else
+    parent=${git_root%\/*}
+    prompt_short_dir="%{\e[1;32m%}λ %{\e[0;32m%}${PWD#$parent/}"
+  fi
+  echo -e "$prompt_short_dir"
+}
+
+setopt PROMPT_SUBST
+TIME=$'%{\e[0;35m%}[%*]'
+PERC=$'%F{249}%%'
+NEWLINE=$'\n'
+PROMPT='$(get_pwd) $(get_branch)$NEWLINE$TIME $PERC '

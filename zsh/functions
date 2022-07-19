@@ -1,0 +1,55 @@
+# Usage: % awsp
+# Prints a list of all profiles in the aws config
+function awsp { awk '/\[profile/{gsub("\\[profile |\\]","");print}' ~/.aws/config }
+
+# Usage: % awso [profile] [aws commands]
+function awso { aws-okta exec -a 1h0m0s -t 4h0m0s $1 -- aws "${@:2}" }
+
+# Usage: % aws-bash [profile]
+# Starts an okta bash shell for the specified profile
+function awso-bash { aws-okta exec $1 -t 4h0m0s -- bash }
+
+# Usage: % sshhosts
+# Prints a list of all hosts defined in ~/.ssh/config
+function sshhosts { awk '/[Hh]ost /{gsub("[Hh]ost |\\]","");print}' ~/.ssh/config }
+
+# Usage: % vpnhosts
+# Prints a list of all available vpns defined in /etc/wireguard/
+function vpnhosts { ls /etc/wireguard/ | sed -e 's/vpn-//g' -e 's/.conf//g' }
+
+# Usage: % vpnconnect TENANT
+# Connects to the VPN for the given TENANT if specified otherwise will connect to all tenant vpns
+function vpnconnect {
+  if [ -z "$1" ]
+  then
+    for i in $(vpnhosts); do; { sudo wg-quick up vpn-$i }; done
+  else
+    sudo wg-quick up vpn-$1
+  fi
+}
+
+# Usage: % vpndisconnect
+# Disconnects from all wireguard VPNs
+function vpndisconnect { for i in $(vpnhosts); do; { sudo wg-quick down vpn-$i }; done }
+
+# Usage % sshairflow TENANT
+# SSHs to the ec2 server for the given TENANT
+function sshairflow { smith --environment seabright-$1 --principal root; ssh -l root `awso formation-$1 ec2 describe-instances --filters Name=tag:Name,Values=seabright-$1-airflow | jq '.Reservations | .[0].Instances | .[0].PrivateIpAddress' | tr -d \"` }
+
+# Usage % sshairflowreset TENANT
+# Rest authentication failures when trying to ssh to an airflow box
+function sshairflowreset { ssh-add -D root@`awso formation-$1 ec2 describe-instances --filters Name=tag:Name,Values=seabright-$1-airflow | jq '.Reservations | .[0].Instances | .[0].PrivateIpAddress' | tr -d \"` }
+
+
+# Usage % mapperversion TENANT
+# Get the latest canonical mapper version for a TENANT
+function mapperversion { awso formation-$1 s3 ls s3://formation-dispensary/acre/v1/master/artifacts/$1-canonical/  --recursive | sort | tail -n 1 | awk '{print $4}' | cut -d "/" -f 6 }
+
+# Usage % dagtag TENANT
+# Find the most recent production tag for TEANT and create a new one incremented by 1
+function dagtag { echo `expr $(git for-each-ref  --sort=creatordate --format '%(refname)' refs/tags | grep seabright/$1/v0 | tail -n 1 | rev | cut -d '/' -f1 | cut -d'.' -f1 | rev) + 1` | xargs -I '{}' git tag -a seabright/${1}/v0.'{}' -m "${1} v0.{}" }
+
+# Usage % exlinks JSON
+# EX: cat offer_file.json | exlinks
+# extract the customer_id and offer_id from offer json and convert it into an explainablity link
+function exlinks { jq -j '"https://app.formation-prod.com/execution/#/admin-tools/explain/", .customer_id, "/", .offer_id, "\n"' }
