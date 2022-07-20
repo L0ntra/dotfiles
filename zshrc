@@ -1,9 +1,7 @@
-BASEPATH=$(pwd)
-
-source ${BASEPATH}/.zsh/prompt
-source ${BASEPATH}/.zsh/env
-source ${BASEPATH}/.zsh/aliases
-source ${BASEPATH}/.zsh/functions
+source ~/.zsh/prompt
+source ~/.zsh/env
+source ~/.zsh/aliases
+source ~/.zsh/functions
 
 # Start SSH agent if it is not alreay running
 if [ -z "$SSH_AUTH_SOCK" ] ; then
