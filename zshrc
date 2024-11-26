@@ -11,3 +11,5 @@ eval `ssh-agent -s` > /dev/null
 # List public keys, strip off `.pub` from file name, add private key to ssh-agent
 for x in $(ls ~/.ssh/*.pub); do ssh-add -q $(echo $x | sed 's/\.pub$//') ; done; 
 
+# Start direnv 
+eval "$(direnv hook zsh)"
