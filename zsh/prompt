@@ -8,6 +8,8 @@ autoload -Uz compinit && compinit
 
 #                  Prompt
 ##############################################
+# Color Picker:  https://robotmoon.com/zsh-prompt-generator/
+
 # Load version control information
 autoload -Uz vcs_info
 precmd() { vcs_info }
@@ -17,7 +19,7 @@ zstyle ':vcs_info:git:*' formats '%b'
 
 # Set up the prompt (with git branch name)
 
-function get_branch() { echo -e "%{\e[0;33m%}${vcs_info_msg_0_}" }
+function get_branch() { echo -e "%F{184}${vcs_info_msg_0_}%f" }
 
 function get_pwd(){
   git_root=$PWD
@@ -26,16 +28,16 @@ function get_pwd(){
   done
   if [[ $git_root = / ]]; then
     unset git_root
-    prompt_short_dir='%{\e[0;32m%~%}'
+    prompt_short_dir='%F{34}%~%f'
   else
     parent=${git_root%\/*}
-    prompt_short_dir="%{\e[1;32m%}λ %{\e[0;32m%}${PWD#$parent/}"
+    prompt_short_dir="%F{40}%Bλ%b%f %F{34}${PWD#$parent/}%f"
   fi
   echo -e "$prompt_short_dir"
 }
 
 setopt PROMPT_SUBST
-TIME=$'%{\e[0;35m%}[%*]'
-PERC=$'%F{249}%%'
+TIME=$'%F{128}[%*]%f'
+PERC=$'%F{249}%%%f'
 NEWLINE=$'\n'
 PROMPT='$(get_pwd) $(get_branch)$NEWLINE$TIME $PERC '
