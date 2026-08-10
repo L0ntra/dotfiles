@@ -22,3 +22,8 @@ alias gp='git fetch --all --prune'
 ej () {
   echo $1 | jq
 }
+
+# Users
+user () {
+  su - $1
+}
