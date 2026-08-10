@@ -2,6 +2,7 @@ source ~/.zsh/prompt
 source ~/.zsh/env
 source ~/.zsh/aliases
 source ~/.zsh/functions
+source ~/.zsh/keybinds
 
 # Start SSH agent if it is not alreay running
 # Start the ssk-agent
