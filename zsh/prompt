@@ -39,5 +39,6 @@ function get_pwd(){
 setopt PROMPT_SUBST
 TIME=$'%F{128}[%*]%f'
 PERC=$'%F{249}%%%f'
+USER=$'%F{60}\{%n\}%f'
 NEWLINE=$'\n'
-PROMPT='$(get_pwd) $(get_branch)$NEWLINE$TIME $PERC '
+PROMPT='$USER $(get_pwd) $(get_branch)$NEWLINE$TIME $PERC '
