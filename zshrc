@@ -14,3 +14,4 @@ for x in $(ls ~/.ssh/*.pub); do ssh-add -q $(echo $x | sed 's/\.pub$//') ; done;
 # Start direnv 
 eval "$(direnv hook zsh)"
 
+export PATH="$HOME/.local/bin:$PATH"
