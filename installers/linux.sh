@@ -2,17 +2,18 @@
 
 # Languages
 ## GO 
-sudo pacman -Sy go 
+sudo pacman -S go 
 echo "export PATH=\$PATH:\$(go env GOPATH)/bin" >> ~/.zsh/env
 
 go install golang.org/x/tools/cmd/goimports@latest
 
 
 # Tools
-sudo pacman -Sy jq yq
+sudo pacman -S jq yq
 
 # Cloud CLI
-sudo pacman -Sy docker docker-compose aws-cli-v2
+sudo pacman -S docker docker-compose aws-cli-v2
 
 # Config
-sudo pacman -Sy direnv
+## Key Mapper
+sudo pacman -S keyd
