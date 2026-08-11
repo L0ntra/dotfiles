@@ -57,9 +57,9 @@ A live `~/.claude/` also contains `backups/`, `cache/`, `file-history/`, `histor
 ### `/prime`
 **File:** `claude/commands/prime.md`
 
-Front-loads project understanding at the start of a session: runs `git ls-files` and `tree`, reads PRD/CLAUDE.md/READMEs, reads entry points and core config, checks `git log` and `git status`, then reports a structured summary (overview, architecture, tech stack, conventions, current state).
+Front-loads project understanding at the start of a session — the subagent way. The main thread only checks git state; three parallel `Explore` subagents do the heavy reading (structure & architecture, conventions & patterns, domain & data) in their own disposable contexts and return condensed briefs, which get synthesized into one scannable report (overview, architecture, conventions with `file:line` examples, domain, validation commands, current state). Breadth without the context pollution of reading 20 files in the main thread.
 
-**When to use it:** at the start of a session where you expect broad, cross-cutting work (a refactor touching many modules, an architecture discussion). For a scoped task ("fix this bug in `auth.py`"), skip it — Claude's agentic search will pull in exactly what it needs, which is cheaper and keeps context focused.
+**When to use it:** at the start of broad, cross-cutting sessions — architecture decisions, multi-module refactors, audits, onboarding to an unfamiliar repo. For a scoped task ("fix this bug in `auth.py`"), skip it — on-demand exploration is cheaper and sharper.
 
 ### `/plan-feature <feature description>`
 **File:** `claude/commands/plan-feature.md`
