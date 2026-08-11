@@ -19,15 +19,17 @@ Claude Code discovers configuration from two places, and the distinction matters
 
 ### Commands at a glance
 
-| Command | One-liner | Overlaps with built-in? |
-|---|---|---|
-| `/prime` | Load broad codebase context at session start | Partially (agentic search does this on demand) |
-| `/plan-feature <desc>` | Deep research → write implementation plan to `.claude/plans/` | Plan mode / `Plan` agent |
-| `/execute <plan>` | Implement a plan file task-by-task with validation gates | — |
-| `/commit` | Stage everything and write a conventional commit | Yes — built-in `/commit` skill |
-| `/create-prd [path]` | Turn conversation context into a full PRD | — |
-| `/create-rules` | Analyze codebase, generate CLAUDE.md | Yes — built-in `/init` |
-| `/create-claude-md` | Scaffold CLAUDE.md from a fill-in template | Yes — `/init` and `/create-rules` |
+| Command | One-liner |
+|---|---|
+| `/prime` | Load broad codebase context at session start |
+| `/plan-feature <desc>` | Deep research → write implementation plan to `.claude/plans/` |
+| `/execute <plan>` | Implement a plan file task-by-task with validation gates |
+| `/create-prd [path]` | Turn conversation context into a full PRD |
+
+Only unique capabilities live here. Jobs covered by built-ins were removed:
+CLAUDE.md generation (`/init`), committing (just say "commit this" — native
+behavior writes a conventional-style message), code review (`/code-review`,
+`/security-review`).
 
 ### Skills at a glance
 
@@ -75,33 +77,16 @@ The quality bar is explicit: the plan must pass a "no prior knowledge test" — 
 ### `/execute <path to plan>`
 **File:** `claude/commands/execute.md`
 
-The other half of the plan/execute pair. Reads the entire plan, implements tasks in order (verifying syntax/imports/types as it goes), implements the testing strategy, runs every validation command from the plan until all pass, then reports completed tasks, tests added, and validation output, ending "ready for `/commit`".
+The other half of the plan/execute pair. Reads the entire plan, implements tasks in order (verifying syntax/imports/types as it goes), implements the testing strategy, runs every validation command from the plan until all pass, then reports completed tasks, tests added, and validation output, ending ready to commit.
 
 **Why the split matters:** planning and execution in one long session degrades both — the planner's exploration clutters the implementer's context. A plan file is a clean, durable handoff, and you can review/correct the plan before any code gets written. This is a genuine best practice.
-
-### `/commit`
-**File:** `claude/commands/commit.md`
-
-Six lines: check `git status`/`git diff`, add untracked and changed files, write an atomic conventional-commit message (`feat`, `fix`, `docs`, …).
-
-**Caution:** "add the untracked files" is a blanket `git add` of everything — an easy way to commit `.env` files, build artifacts, or scratch files. The built-in `/commit` skill covers the same ground with more care; this project version shadows it.
 
 ### `/create-prd [output path]`
 **File:** `claude/commands/create-prd.md`
 
 Distills the current conversation into a 15-section PRD (executive summary, mission, personas, MVP in/out of scope, user stories, architecture, features, stack, security, API spec, success criteria, phased implementation plan, future work, risks, appendix), with style rules and a quality checklist. Defaults to `PRD.md`.
 
-**When to use it:** after a design conversation, before `/plan-feature`. The natural pipeline is: **discuss → `/create-prd` → `/plan-feature` → `/execute` → `/e2e-test` → `/commit`**.
-
-### `/create-rules` and `/create-claude-md`
-**Files:** `claude/commands/create-rules.md`, `claude/commands/create-claude-md.md`
-
-Two takes on the same job — generate a `CLAUDE.md`:
-
-- `/create-rules`: analysis-first (detect project type, extract stack/patterns/key files, then generate)
-- `/create-claude-md`: template-first (scaffold sections — overview, stack, commands, structure, patterns, testing, validation — and fill them in)
-
-The built-in `/init` command does this too. Three tools, one job — a consolidation candidate.
+**When to use it:** after a design conversation, before `/plan-feature`. The natural pipeline is: **discuss → `/create-prd` → `/plan-feature` → `/execute` → `/e2e-test` → commit**.
 
 ---
 
@@ -209,7 +194,7 @@ CLAUDE.md is loaded into *every* session — it's the most expensive real estate
 
 - Commit at every green checkpoint — cheap rollback beats careful forward-only progress.
 - Ask for **worktrees** when you want parallel agents mutating files without collisions.
-- Let Claude write the commits (`/commit`), but keep staging explicit.
+- Let Claude write the commits (say "commit this"), but keep staging explicit — never blanket-add untracked files.
 
 ### 7. Scale up deliberately
 
@@ -222,7 +207,7 @@ For big jobs (repo-wide migration, full audit, "find every bug"):
 
 ```
 discuss idea → /create-prd → /plan-feature → [review the plan yourself]
-→ /execute → /e2e-test → /code-review (built-in) → /commit
+→ /execute → /e2e-test → /code-review (built-in) → commit
 ```
 
 Each stage produces a durable artifact (PRD → plan → code → test report → commit), each stage can run in a fresh, focused session, and each stage validates the previous one. That's the shape of high-throughput, high-trust AI-assisted delivery.
