@@ -1,0 +1,12 @@
+bindkey -e                                 # ensure emacs keymap
+
+bindkey "^[[H"    beginning-of-line        # Home
+bindkey "^[[F"    end-of-line              # End
+bindkey "^[[1~"   beginning-of-line        # Home (alternate encoding)
+bindkey "^[[4~"   end-of-line              # End (alternate encoding)
+bindkey "^[[3~"   delete-char              # Delete
+bindkey "^[[1;5D" backward-word            # ctrl+left
+bindkey "^[[1;5C" forward-word             # ctrl+right
+bindkey "^[[3;5~" kill-word                # ctrl+delete
+bindkey "^H"      backward-kill-word       # ctrl+backspace
+bindkey "^U"      backward-kill-line       # ctrl+u → delete to line start

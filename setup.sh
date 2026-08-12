@@ -3,10 +3,28 @@
 BASEDIR=$(pwd)
 
 ## Create Symlinks
+# Skips any link whose target already exists so re-running is safe.
+link() {
+  local src=$1 dst=$2
+  if [ -e "${dst}" ] || [ -L "${dst}" ]; then
+    echo "skip:  ${dst} already exists"
+  else
+    ln -s "${src}" "${dst}"
+    echo "link:  ${dst} -> ${src}"
+  fi
+}
+
 # zsh
-ln -s ${BASEDIR}/zshrc ~/.zshrc
-ln -s ${BASEDIR}/zsh ~/.zsh
+link ${BASEDIR}/zshrc ~/.zshrc
+link ${BASEDIR}/zsh ~/.zsh
+
+# ghostty
+link ${BASEDIR}/ghostty ~/.config/ghostty
+
+# claude code
+mkdir -p ~/.claude
+link ${BASEDIR}/claude/commands ~/.claude/commands
+link ${BASEDIR}/claude/skills ~/.claude/skills
+link ${BASEDIR}/claude/settings.json ~/.claude/settings.json
 
 touch ${BASEDIR}/zsh/env
-
-
