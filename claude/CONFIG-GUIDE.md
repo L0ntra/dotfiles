@@ -41,7 +41,7 @@ behavior writes a conventional-style message), code review (`/code-review`,
 
 | File | Purpose | Current contents |
 |---|---|---|
-| `~/.claude/settings.json` | User-level settings, all projects | `{"model": "claude-fable-5[1m]", "theme": "dark"}` |
+| `~/.claude/settings.json` | User-level settings, all projects — versioned at `claude/settings.json` here | model, theme, and a read-only permission allowlist |
 | `<project>/.claude/settings.json` | Shared project settings (checked into that project) | — |
 | `<project>/.claude/settings.local.json` | Personal/machine-local settings (gitignored) | — |
 

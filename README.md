@@ -8,7 +8,7 @@ Personal configuration, symlinked into place by `setup.sh`.
 |---|---|---|
 | `zshrc`, `zsh/` | `~/.zshrc`, `~/.zsh` | Zsh configuration |
 | `ghostty/` | `~/.config/ghostty` | Ghostty terminal config |
-| `claude/commands`, `claude/skills` | `~/.claude/commands`, `~/.claude/skills` | User-level Claude Code slash commands and skills — see [claude/README.md](claude/README.md) |
+| `claude/commands`, `claude/skills`, `claude/settings.json` | `~/.claude/commands`, `~/.claude/skills`, `~/.claude/settings.json` | User-level Claude Code slash commands, skills, and settings — see [claude/README.md](claude/README.md) |
 | `installers/` | — | Package install scripts (Arch Linux) |
 
 ## Setup

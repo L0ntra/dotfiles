@@ -25,5 +25,6 @@ link ${BASEDIR}/ghostty ~/.config/ghostty
 mkdir -p ~/.claude
 link ${BASEDIR}/claude/commands ~/.claude/commands
 link ${BASEDIR}/claude/skills ~/.claude/skills
+link ${BASEDIR}/claude/settings.json ~/.claude/settings.json
 
 touch ${BASEDIR}/zsh/env
