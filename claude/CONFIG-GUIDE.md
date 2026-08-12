@@ -36,7 +36,6 @@ behavior writes a conventional-style message), code review (`/code-review`,
 | Skill | One-liner |
 |---|---|
 | `agent-browser` | Full CLI reference for browser automation: navigate, snapshot, click, fill, screenshot, record, mock network |
-| `e2e-test` | Orchestrated end-to-end test run: 3 parallel research agents → start app → test every user journey with screenshots + DB verification → report |
 
 ### Settings files at a glance
 
@@ -86,7 +85,7 @@ The other half of the plan/execute pair. Reads the entire plan, implements tasks
 
 Distills the current conversation into a 15-section PRD (executive summary, mission, personas, MVP in/out of scope, user stories, architecture, features, stack, security, API spec, success criteria, phased implementation plan, future work, risks, appendix), with style rules and a quality checklist. Defaults to `PRD.md`.
 
-**When to use it:** after a design conversation, before `/plan-feature`. The natural pipeline is: **discuss → `/create-prd` → `/plan-feature` → `/execute` → `/e2e-test` → commit**.
+**When to use it:** after a design conversation, before `/plan-feature`. The natural pipeline is: **discuss → `/create-prd` → `/plan-feature` → `/execute` → test → commit**.
 
 ---
 
@@ -107,20 +106,6 @@ agent-browser fill @e2 "text"
 Covers navigation, snapshots (scoped/depth-limited), every interaction type, reading text/attributes/state, screenshots and PDF, video recording, waits (element/text/URL/network-idle/JS condition), device and viewport emulation, cookies/localStorage, network interception and mocking, tabs, iframes, dialogs, `eval`, semantic locators (`find role button click --name "Submit"`), saved auth state for skipping login, parallel sessions, `--json` output, and debugging (console, errors, traces, `--headed`).
 
 The key discipline it teaches: **refs go stale after navigation or DOM changes — always re-snapshot.**
-
-### `e2e-test`
-**File:** `claude/skills/e2e-test/SKILL.md`
-
-A full testing pipeline, and a good example of a well-designed "orchestrator" skill:
-
-1. **Pre-flight:** platform check, frontend check, auto-install `agent-browser`
-2. **Parallel research:** three simultaneous subagents — (a) app structure & every user journey, (b) DB schema & expected data flow per action with validation queries, (c) static bug hunt
-3. **Start the app** in the background
-4. **Task list:** one tracked task per user journey
-5. **Test each journey:** snapshot → interact → wait → screenshot → analyze; verify DB records after every mutation (`psql`/`sqlite3` directly); **fix issues found and re-test**; responsive pass at mobile/tablet/desktop viewports
-6. **Report:** journeys tested, issues found/fixed/remaining, optional markdown export
-
-**When to use it:** after `/execute` completes, before code review — it catches integration issues unit tests miss.
 
 ---
 
@@ -158,7 +143,7 @@ With an effectively unlimited token budget, the goal isn't spending fewer tokens
 ### 1. Protect the main thread's context
 
 - **One task per session.** Start fresh (`/clear` or new session) for each feature or bug. Long sessions accumulate stale file reads and dead-end exploration that dilute attention and eventually get summarized away.
-- **Push exploration into subagents.** "Find everywhere X is handled" as an `Explore` agent returns a conclusion, not 30 file dumps in your main context. Launch independent research agents in parallel — this is exactly what `/plan-feature` and `e2e-test` already do.
+- **Push exploration into subagents.** "Find everywhere X is handled" as an `Explore` agent returns a conclusion, not 30 file dumps in your main context. Launch independent research agents in parallel — this is exactly what `/plan-feature` and `/prime` already do.
 - **Don't front-load context you might need; let it be pulled on demand.** Reserve `/prime` for genuinely broad work.
 
 ### 2. Plan before building — and gate the plan
@@ -173,7 +158,7 @@ This is the single highest-leverage practice. Claude with a feedback loop self-c
 
 - Every plan task should have an **executable validation command** (`/plan-feature` enforces this).
 - Keep **fast test/lint/typecheck commands documented in CLAUDE.md** so any session can verify its own work.
-- Use `e2e-test` after implementation — browser + database verification catches what unit tests can't.
+- Test end-to-end after implementation — browser + database verification catches what unit tests can't.
 - For UI work, have Claude **screenshot and look at the result** rather than assume.
 
 ### 4. Make CLAUDE.md earn its place
@@ -207,7 +192,7 @@ For big jobs (repo-wide migration, full audit, "find every bug"):
 
 ```
 discuss idea → /create-prd → /plan-feature → [review the plan yourself]
-→ /execute → /e2e-test → /code-review (built-in) → commit
+→ /execute → test → /code-review (built-in) → commit
 ```
 
 Each stage produces a durable artifact (PRD → plan → code → test report → commit), each stage can run in a fresh, focused session, and each stage validates the previous one. That's the shape of high-throughput, high-trust AI-assisted delivery.
