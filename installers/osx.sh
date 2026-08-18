@@ -24,4 +24,4 @@ go install golang.org/x/tools/cmd/goimports@latest
 brew install parquet-tools grep jq yq
 
 # Cloud CLI
-brew install docker awscli terraform
+brew install docker awscli

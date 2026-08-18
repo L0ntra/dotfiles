@@ -1,6 +1,4 @@
 {
-  "model": "claude-fable-5[1m]",
-  "theme": "dark",
   "permissions": {
     "allow": [
       "Bash(npm audit)",
@@ -9,5 +7,7 @@
       "Bash(npm test)",
       "Bash(npm run typecheck)"
     ]
-  }
+  },
+  "model": "claude-fable-5[1m]",
+  "theme": "dark"
 }
