@@ -19,7 +19,11 @@ link ${BASEDIR}/zshrc ~/.zshrc
 link ${BASEDIR}/zsh ~/.zsh
 
 # ghostty
-link ${BASEDIR}/ghostty ~/.config/ghostty
+if [ "$(uname)" = "Darwin" ]; then
+  link "${BASEDIR}/ghostty" ~/Library/Application\ Support/com.mitchellh.ghostty
+else
+  link "${BASEDIR}/ghostty" ~/.config/ghostty
+fi
 
 # claude code
 mkdir -p ~/.claude
